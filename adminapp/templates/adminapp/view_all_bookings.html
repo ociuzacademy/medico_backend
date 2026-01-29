@@ -1,0 +1,83 @@
+{% extends 'adminapp/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">All Bookings</h2>
+
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs" id="bookingTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="clinic-tab" data-bs-toggle="tab" data-bs-target="#clinic" type="button" role="tab">Clinic Bookings</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="hospital-tab" data-bs-toggle="tab" data-bs-target="#hospital" type="button" role="tab">Hospital Bookings</button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content mt-3" id="bookingTabsContent">
+
+    <!-- Clinic Bookings -->
+    <div class="tab-pane fade show active" id="clinic" role="tabpanel" aria-labelledby="clinic-tab">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Booked At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in clinic_bookings %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ booking.user.name }}</td>
+            <td>{% if booking.doctor %}{{ booking.doctor.name }}{% else %}<span class="text-muted">Doctor Deleted</span>{% endif %}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.time }}</td>
+            <td>{{ booking.created_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center text-muted">No clinic bookings yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Hospital Bookings -->
+    <div class="tab-pane fade" id="hospital" role="tabpanel" aria-labelledby="hospital-tab">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in hospital_bookings %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ booking.user.name }}</td>
+            <td>{% if booking.doctor %}{{ booking.doctor.name }}{% else %}<span class="text-muted">Doctor Deleted</span>{% endif %}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.time }}</td>
+            <td>{{ booking.status }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center text-muted">No hospital bookings yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
