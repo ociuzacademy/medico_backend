@@ -210,7 +210,7 @@ class HospitalDoctorProfileUpdateSerializer(serializers.ModelSerializer):
 
 
 from rest_framework import serializers
-from .models import ClinicDoctorBooking
+from .models import ClinicBooking
 
 
 class ClinicDoctorBookingSerializer(serializers.ModelSerializer):
@@ -218,7 +218,7 @@ class ClinicDoctorBookingSerializer(serializers.ModelSerializer):
     doctor_name = serializers.CharField(source='doctor.name', read_only=True)
 
     class Meta:
-        model = ClinicDoctorBooking
+        model = ClinicBooking
         fields = [
             'id', 'user', 'user_name', 'doctor', 'doctor_name',
             'timeslot_group', 'date', 'time', 'status', 'booked_at'

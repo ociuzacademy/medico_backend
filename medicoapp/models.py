@@ -186,78 +186,7 @@ class HospitalDoctorTimeSlotGroup(models.Model):
 
 
 
-from django.db import models
-from .models import tbl_register, tbl_clinic_doctor_register, ClinicDoctorTimeSlotGroup
-
-class ClinicDoctorBooking(models.Model):
-    user = models.ForeignKey(tbl_register, on_delete=models.CASCADE, related_name='clinic_bookings')
-    doctor = models.ForeignKey(tbl_clinic_doctor_register, on_delete=models.CASCADE, related_name='bookings')
-    timeslot_group = models.ForeignKey(ClinicDoctorTimeSlotGroup, on_delete=models.CASCADE, related_name='bookings')
-    date = models.DateField()
-    time = models.CharField(max_length=10)  # e.g. "10:00"
-
-    is_booked = models.BooleanField(default=True)  # always True once booked
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.name} booked {self.doctor.name} on {self.date} at {self.time}"
-
-
-
-
-from django.db import models
-from .models import tbl_register, tbl_hospital_doctor_register, HospitalDoctorTimeSlotGroup
-
-class HospitalDoctorBooking(models.Model):
-    user = models.ForeignKey(tbl_register, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(tbl_hospital_doctor_register, on_delete=models.CASCADE)
-    timeslot_group = models.ForeignKey(HospitalDoctorTimeSlotGroup, on_delete=models.CASCADE)
-    date = models.DateField()
-    time = models.CharField(max_length=20)
-    status = models.CharField(max_length=20, default='booked')  # optional
-
-    def __str__(self):
-        return f"{self.user.name} booked {self.doctor.name} at {self.time} on {self.date}"
-
-
-
-
-
-from django.db import models
-from .models import tbl_register, tbl_clinic_doctor_register, ClinicDoctorTimeSlotGroup
-
-class TblClinicDoctorBooking(models.Model):
-    user = models.ForeignKey(tbl_register, on_delete=models.CASCADE, related_name='clinic_doctor_bookings')
-    doctor = models.ForeignKey(tbl_clinic_doctor_register, on_delete=models.CASCADE, related_name='clinic_bookings')
-    timeslot_group = models.ForeignKey(ClinicDoctorTimeSlotGroup, on_delete=models.CASCADE, related_name='clinic_bookings')
-    date = models.DateField()
-    time = models.CharField(max_length=10)  # e.g. "10:00"
-
-    is_booked = models.BooleanField(default=True)  # always True once booked
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.name} booked {self.doctor.name} on {self.date} at {self.time}"
-
-
-
-
-from django.db import models
-from .models import tbl_register, tbl_hospital_doctor_register, HospitalDoctorTimeSlotGroup
-
-class TblHospitalDoctorBooking(models.Model):
-    user = models.ForeignKey(tbl_register, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(tbl_hospital_doctor_register, on_delete=models.CASCADE)
-    timeslot_group = models.ForeignKey(HospitalDoctorTimeSlotGroup, on_delete=models.CASCADE)
-    date = models.DateField()
-    time = models.CharField(max_length=20)
-    status = models.CharField(max_length=20, default='booked')  # optional
-
-    def __str__(self):
-        return f"{self.user.name} booked {self.doctor.name} at {self.time} on {self.date}"
-
-
-
+# 
 
 
 
