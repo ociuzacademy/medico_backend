@@ -1266,30 +1266,6 @@ def view_hospital_doctor_feedback(request, doctor_id):
     return Response(serializer.data)
 
 
-
-# views.py
-from django.http import HttpResponse
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
-from reportlab.platypus import Table, TableStyle
-
-from .models import ClinicBooking, HospitalBooking
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.http import HttpResponse
-from .models import ClinicBooking, HospitalBooking
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-from reportlab.lib.units import inch
-# views.py
-
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -1301,73 +1277,54 @@ from reportlab.lib.units import inch
 from .models import ClinicBooking, HospitalBooking
 
 
-# ✅ CLINIC BOOKING PDF DOWNLOAD
 @api_view(['POST'])
-def download_clinic_booking_pdf(request, booking_id):
+def download_booking_pdf(request, booking_type, booking_id):
+
+    # ✅ Decide model based on type
+    if booking_type == "clinic":
+        model = ClinicBooking
+        title = "Clinic Doctor Booking Receipt"
+    elif booking_type == "hospital":
+        model = HospitalBooking
+        title = "Hospital Doctor Booking Receipt"
+    else:
+        return Response({"error": "Invalid booking type"}, status=400)
+
     try:
-        booking = ClinicBooking.objects.get(id=booking_id)
-    except ClinicBooking.DoesNotExist:
+        booking = model.objects.get(id=booking_id)
+    except model.DoesNotExist:
         return Response({"error": "Booking not found"}, status=404)
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="clinic_booking_{booking_id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{booking_type}_booking_{booking_id}.pdf"'
 
     doc = SimpleDocTemplate(response)
     elements = []
     styles = getSampleStyleSheet()
 
-    elements.append(Paragraph("<b>Clinic Doctor Booking Receipt</b>", styles['Title']))
+    elements.append(Paragraph(f"<b>{title}</b>", styles['Title']))
     elements.append(Spacer(1, 0.3 * inch))
+
+    # ✅ Safe doctor name handling
+    doctor_name = "Doctor removed"
+    place_name = ""
+
+    if booking.doctor:
+        doctor_name = booking.doctor.name
+        place_name = getattr(booking.doctor, "clinic_name", "") or getattr(booking.doctor, "hospital_name", "")
 
     data = [
         ["Booking ID:", booking.id],
-        ["Patient Name:", booking.user.name],
-        ["Doctor Name:", booking.doctor.name],
-        ["Clinic Name:", booking.doctor.clinic_name],
+        ["Patient Name:", booking.user.name if booking.user else "User removed"],
+        ["Doctor Name:", doctor_name],
+        ["Location:", place_name],
         ["Date:", str(booking.date)],
         ["Time:", booking.time],
-        ["Booked On:", str(booking.created_at)],
     ]
 
-    table = Table(data, colWidths=[150, 300])
-    table.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-    ]))
-
-    elements.append(table)
-    doc.build(elements)
-
-    return response
-
-
-# ✅ HOSPITAL BOOKING PDF DOWNLOAD
-@api_view(['POST'])
-def download_hospital_booking_pdf(request, booking_id):
-    try:
-        booking = HospitalBooking.objects.get(id=booking_id)
-    except HospitalBooking.DoesNotExist:
-        return Response({"error": "Booking not found"}, status=404)
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="hospital_booking_{booking_id}.pdf"'
-
-    doc = SimpleDocTemplate(response)
-    elements = []
-    styles = getSampleStyleSheet()
-
-    elements.append(Paragraph("<b>Hospital Doctor Booking Receipt</b>", styles['Title']))
-    elements.append(Spacer(1, 0.3 * inch))
-
-    data = [
-        ["Booking ID:", booking.id],
-        ["Patient Name:", booking.user.name],
-        ["Doctor Name:", booking.doctor.name],
-        ["Hospital Name:", booking.doctor.hospital_name],
-        ["Date:", str(booking.date)],
-        ["Time:", booking.time],
-        ["Status:", booking.status],
-    ]
+    # Add status only for hospital
+    if booking_type == "hospital":
+        data.append(["Status:", booking.status])
 
     table = Table(data, colWidths=[150, 300])
     table.setStyle(TableStyle([

@@ -59,13 +59,17 @@ urlpatterns = [
    path('hospital/doctor/book-slot/', views.book_hospital_doctor_slot, name='book_hospital_doctor_slot'),
    path('clinic/doctor/<int:doctor_id>/bookings/', views.doctor_view_booking_clinic.as_view(), name='doctor_view_booking_clinic'),
    path('hospital/doctor/<int:doctor_id>/bookings/', views.doctor_view_booking_hospital.as_view(), name='doctor_view_booking_hospital'),
-   path('user/<int:user_id>/clinic/bookinKOgs/', views.user_view_booking_clinic.as_view(), name='user_view_clinic_bookings'),
+   path('user/<int:user_id>/clinic/bookings/', views.user_view_booking_clinic.as_view(), name='user_view_clinic_bookings'),
    path('user/<int:user_id>/hospital/bookings/', views.user_view_booking_hospital.as_view(), name='user_view_hospital_bookings'),
    path('user-add-feedback/', views.add_clinic_doctor_feedback, name='add_clinic_doctor_feedback'),
    path('clinic/doctor/<int:doctor_id>/feedback/', views.view_clinic_doctor_feedback, name='view_clinic_doctor_feedback'),
    path('user-hospital/doctor/feedback/add/', views.add_hospital_doctor_feedback, name='add_hospital_doctor_feedback'),
    path('hospital/doctor/<int:doctor_id>/feedback/', views.view_hospital_doctor_feedback, name='view_hospital_doctor_feedback'),
-   path('clinic-booking/download/<int:booking_id>/',views.download_clinic_booking_pdf,name='download_clinic_booking_pdf'),
-# Hospital Booking PDF
-   path('hospital-booking/download/<int:booking_id>/',views.download_hospital_booking_pdf,name='download_hospital_booking_pdf'),
+   path(
+    'booking/download/<str:booking_type>/<int:booking_id>/',
+    views.download_booking_pdf,
+    name='download_booking_pdf'
+),
+
+
 ]
